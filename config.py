@@ -26,12 +26,12 @@
 
 from typing import List  # noqa: F401
 
-from libqtile import bar, layout, widget, extension
+from libqtile import bar, layout, widget, extension, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-
 import os
+import subprocess
 
 mod = "mod4"
 alt = "mod1"
@@ -45,32 +45,32 @@ color_selected_foreground = "#FFFFFF"
 
 keys = [
     # Switch between windows
-    Key([mod], "j", lazy.layout.left(), desc="Move focus to left"),
-    Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
-    Key([mod], "k", lazy.layout.down(), desc="Move focus down"),
-    Key([mod], "i", lazy.layout.up(), desc="Move focus up"),
+    Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
+    Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
+    Key([mod], "Down", lazy.layout.down(), desc="Move focus down"),
+    Key([mod], "Up", lazy.layout.up(), desc="Move focus up"),
     Key([alt], "Tab", lazy.layout.next(),
         desc="Move window focus to other window"),
 
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "j", lazy.layout.shuffle_left(),
+    Key([mod, "shift"], "Left", lazy.layout.shuffle_left(),
         desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(),
+    Key([mod, "shift"], "Right", lazy.layout.shuffle_right(),
         desc="Move window to the right"),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_down(),
+    Key([mod, "shift"], "Down", lazy.layout.shuffle_down(),
         desc="Move window down"),
-    Key([mod, "shift"], "i", lazy.layout.shuffle_up(), desc="Move window up"),
+    Key([mod, "shift"], "Up", lazy.layout.shuffle_up(), desc="Move window up"),
 
     # Grow windows. If current window is on the edge oflLk screen and direction
     # will be to screen edge - window would shrink.
-    Key([mod, "control"], "j", lazy.layout.grow_left(),
+    Key([mod, "control"], "Left", lazy.layout.grow_left(),
         desc="Grow window to the left"),
-    Key([mod, "control"], "l", lazy.layout.grow_right(),
+    Key([mod, "control"], "Right", lazy.layout.grow_right(),
         desc="Grow window to the right"),
-    Key([mod, "control"], "k", lazy.layout.grow_down(),
+    Key([mod, "control"], "Down", lazy.layout.grow_down(),
         desc="Grow window down"),
-    Key([mod, "control"], "i", lazy.layout.grow_up(), desc="Grow window up"),
+    Key([mod, "control"], "Up", lazy.layout.grow_up(), desc="Grow window up"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
 
     # Toggle between split and unsplit sides of stack.
@@ -91,7 +91,8 @@ keys = [
         background=color_background,
         foreground=color_foreground,
         selected_background=color_selected_background,
-        selected_foreground=color_selected_foreground
+        selected_foreground=color_selected_foreground,
+        dmenu_ignorecase=True
     )),
         desc="Spawn a command using a prompt widget"),
 ]
@@ -171,6 +172,7 @@ screens = [
                 widget.TextBox("",
                                foreground="#d75f5f"),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+                widget.Volume(),
                 widget.Systray(),
                 # widget.QuickExit(),
             ],
@@ -222,14 +224,8 @@ auto_minimize = True
 # java that happens to be on java's whitelist.
 wmname = "LG3D"
 
-autostart = [
-    'feh --bg-fill ~/.config/qtile/wallpaper.jpg',
-    "sh -c '/usr/bin/nvidia-settings --load-config-only' &",
-    'systemctl --user start onedrive &',
-    '/usr/bin/gnome-keyring-daemon --start --components=ssh &'
-    'nm-applet &',
-    #'lxappearance &'
-]
 
-for x in autostart:
-    os.system(x)
+@hook.subscribe.startup_once
+def autostart():
+    home = os.path.expanduser('~')
+    subprocess.Popen([home + '/.config/qtile/autostart.sh'])
