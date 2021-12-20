@@ -95,6 +95,10 @@ keys = [
         dmenu_ignorecase=True
     )),
         desc="Spawn a command using a prompt widget"),
+    Key([mod], "m", lazy.spawn("rofi -show drun"), desc="Menu Rofi"),
+    Key([mod], "f", lazy.spawn("firefox"), desc="Menu Rofi"),
+    Key([mod], "i", lazy.spawn("chromium"), desc="Menu Rofi"),
+    Key([mod], "c", lazy.spawn("code"), desc="Menu Rofi"),
 ]
 
 #groups = [Group(i) for i in "123456789"]
@@ -128,14 +132,17 @@ for i in groups:
     ])
 
 layouts = [
-    layout.Columns(border_focus_stack=['#d75f5f', '#8f3d3d'], border_width=4),
+    layout.Columns(
+        border_focus_stack=['#d75f5f', '#8f3d3d'],
+        border_width=2,
+    ),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
     layout.MonadTall(
-        border_width=1,
+        border_width=2,
         border_focus=color_main,
         align=1,
     ),
