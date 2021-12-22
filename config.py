@@ -179,7 +179,7 @@ screens = [
                 widget.TextBox("",
                                foreground="#d75f5f"),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-                widget.Volume(),
+                # widget.Volume(),
                 widget.Systray(),
                 # widget.QuickExit(),
             ],
@@ -236,3 +236,8 @@ wmname = "LG3D"
 def autostart():
     home = os.path.expanduser('~')
     subprocess.Popen([home + '/.config/qtile/autostart.sh'])
+
+
+@hook.subscribe.startup_complete
+def reset():
+    lazy.restart()
