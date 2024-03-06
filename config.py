@@ -27,6 +27,7 @@
 from typing import List  # noqa: F401
 
 from libqtile import bar, layout, extension, hook, qtile #widget,
+from libqtile import widget as widget_basic
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
@@ -40,11 +41,10 @@ mod = "mod4"
 alt = "mod1"
 terminal = "tilix"
 
-color_main = "#E78200"
-color_background = "#FFB46C"
-color_foreground = "#3D2814"
-color_selected_background = "#B32E2E"
-color_selected_foreground = "#FFFFFF"
+FONT = "Ubuntu Mono"
+FONT_BOLD = "Ubuntu Bold"
+COLORS = colors.MonokaiPro
+
 
 keys = [
     # Switch between windows
@@ -92,10 +92,10 @@ keys = [
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.run_extension(extension.DmenuRun(
-        background=color_background,
-        foreground=color_foreground,
-        selected_background=color_selected_background,
-        selected_foreground=color_selected_foreground,
+        background=COLORS[0][0],
+        foreground=COLORS[1][0],
+        selected_background=COLORS[0][1],
+        selected_foreground=COLORS[1][1],
         dmenu_ignorecase=True
     )),
         desc="Spawn a command using a prompt widget"),
@@ -135,18 +135,17 @@ for i in groups:
         #     desc="move focused window to group {}".format(i.name)),
     ])
 
-colors = colors.MonokaiPro
 
 layout_theme = {"border_width": 2,
                 "margin": 8,
                 "align": 1,
-                "border_focus": colors[8],
-                "border_normal": colors[0]
+                "border_focus": COLORS[8],
+                "border_normal": COLORS[0]
                 }
 
 layouts = [
     layout.Columns(
-        border_focus_stack=['#d75f5f', '#8f3d3d'],
+        border_focus_stack=COLORS[0],
         border_width=2,
     ),
     layout.Max(),
@@ -175,24 +174,47 @@ layouts = [
 ]
 
 widget_defaults = dict(
-    font="Ubuntu Bold", #font='sans',
+    font=FONT_BOLD, #font='sans',
     fontsize=16,
     padding=10,
-    background=colors[0]
+    background=COLORS[0]
 )
 extension_defaults = widget_defaults.copy()
+
+def widget_spacer():
+    return widget.Spacer(length = 5)
+
+def change_volume(delta):
+    qtile.cmd_spawn("pactl set-sink-volume @DEFAULT_SINK@ {}%".format(delta))
+
+def decoration_theme(color):
+    return [
+        BorderDecoration(
+            colour = COLORS[color],
+            border_width = [0, 0, 2, 0],
+        )
+    ]
+
+def text_box():
+    return widget.TextBox(
+        text = '|',
+        font = FONT,
+        foreground = COLORS[1],
+        padding = 5,
+        fontsize = 14
+    )
 
 def init_widgets_list():
     widgets_list = [
         widget.Image(
                  filename = "~/.config/qtile/icons/logo.png",
                  scale = "False",
-                 mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal)},
+                 mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("rofi -show drun")},
                  ),
         widget.Prompt(
-                 font = "Ubuntu Mono",
+                 font = FONT,
                  fontsize=14,
-                 foreground = colors[1]
+                 foreground = COLORS[1]
         ),
         widget.GroupBox(
                  fontsize = 12,
@@ -201,135 +223,101 @@ def init_widgets_list():
                  padding_y = 0,
                  padding_x = 5,
                  borderwidth = 3,
-                 active = colors[8],
-                 inactive = colors[1],
+                 active = COLORS[8],
+                 inactive = COLORS[1],
                  rounded = False,
-                 highlight_color = colors[2],
+                 highlight_color = COLORS[2],
                  highlight_method = "line",
-                 this_current_screen_border = colors[7],
-                 this_screen_border = colors [4],
-                 other_current_screen_border = colors[7],
-                 other_screen_border = colors[4],
+                 this_current_screen_border = COLORS[7],
+                 this_screen_border = COLORS[4],
+                 other_current_screen_border = COLORS[7],
+                 other_screen_border = COLORS[4],
                  ),
-        widget.TextBox(
-                 text = '|',
-                 font = "Ubuntu Mono",
-                 foreground = colors[1],
-                 padding = 2,
-                 fontsize = 14
-                 ),
+        text_box(),
         widget.CurrentLayoutIcon(
                  # custom_icon_paths = [os.path.expanduser("~/.config/qtile/icons")],
-                 foreground = colors[1],
+                 foreground = COLORS[1],
                  padding = 4,
                  scale = 0.6
                  ),
         widget.CurrentLayout(
-                 foreground = colors[1],
+                 foreground = COLORS[1],
                  padding = 5
                  ),
-        widget.TextBox(
-                 text = '|',
-                 font = "Ubuntu Mono",
-                 foreground = colors[1],
-                 padding = 2,
-                 fontsize = 14
-                 ),
+        text_box(),
         widget.WindowName(
-                 foreground = colors[6],
+                 foreground = COLORS[6],
                  max_chars = 40
                  ),
         #widget.GenPollText(
         #         update_interval = 300,
         #         func = lambda: subprocess.check_output("printf $(uname -r)", shell=True, text=True),
-        #         foreground = colors[3],
+        #         foreground = COLORS[3],
         #         fmt = '{}',
         #         decorations=[
         #             BorderDecoration(
-        #                 colour = colors[3],
+        #                 colour = COLORS[3],
         #                 border_width = [0, 0, 2, 0],
         #             )
         #         ],
         #         ),
-        widget.Spacer(length = 8),
+        widget_spacer(),
         widget.CPU(
                  format = '▓  Cpu: {load_percent}%',
-                 foreground = colors[4],
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[4],
-                         border_width = [0, 0, 2, 0],
-                     )
-                 ],
+                 foreground = COLORS[4],
+                 decorations=decoration_theme(4),
                  ),
-        widget.Spacer(length = 8),
+        widget_spacer(),
         widget.Memory(
-                 foreground = colors[8],
+                 foreground = COLORS[8],
                  mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e htop')},
                  format = '{MemUsed: ,.0f}{mm}',
                  fmt = '🖥  Mem: {} used',
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[8],
-                         border_width = [0, 0, 2, 0],
-                     )
-                 ],
+                 decorations=decoration_theme(8),
                  ),
-        widget.Spacer(length = 8),
+        widget_spacer(),
         widget.DF(
                  update_interval = 60,
-                 foreground = colors[5],
+                 foreground = COLORS[5],
                  mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e df')},
                  partition = '/',
                  #format = '[{p}] {uf}{m} ({r:.0f}%)',
                  format = '{uf}{m} free',
                  fmt = 'Disk: {}',
                  visible_on_warn = False,
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[5],
-                         border_width = [0, 0, 2, 0],
-                     )
-                 ],
+                 decorations = decoration_theme(5),
                  ),
-        widget.Spacer(length = 8),
-        widget.Volume(
-                 foreground = colors[7],
-                 emoji = True,
-                 fmt = 'Vol: {}',
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[7],
-                         border_width = [0, 0, 2, 0],
-                    )
-                 ],
-                 ),
-        widget.Spacer(length = 8),
+        widget_spacer(),
+        widget_basic.Systray(
+            background = COLORS[7][1],
+            padding = 3,
+            icon_size = 20,
+            decorations = decoration_theme(5)
+        ),
+        #widget.Volume(
+                #channel='IEC958',
+                #foreground = COLORS[7],
+                #emoji = True,
+                #fmt = 'Vol: {}',
+                #decorations=decoration_theme(7),
+                #update_interval=1,
+                #volume_app=change_volume
+                #),
+        widget_spacer(),
         widget.KeyboardLayout(
-                 foreground = colors[4],
+                 foreground = COLORS[3],
                  fmt = '⌨ {}',
                  configured_keyboards = ['latam'],
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[4],
-                         border_width = [0, 0, 2, 0],
-                     )
-                 ],
+                 decorations=decoration_theme(3),
                  ),
-        widget.Spacer(length = 8),
+        widget_spacer(),
         widget.Clock(
-                 foreground = colors[8],
+                 foreground = COLORS[8],
                  format = "%a, %b %d %Y - %H:%M",
-                 decorations=[
-                     BorderDecoration(
-                         colour = colors[8],
-                         border_width = [0, 0, 2, 0],
-                     )
-                 ],
+                 decorations=decoration_theme(8),
                  ),
-        widget.Spacer(length = 8),
-        #widget.Systray(padding = 3),
-        #widget.Spacer(length = 8),
+        #widget_spacer(),
+        #widget_spacer(),
         ]
     return widgets_list
 

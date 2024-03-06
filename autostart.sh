@@ -5,7 +5,7 @@
 systemctl --user start onedrive &
 #/usr/bin/gnome-keyring-daemon --start --components=ssh &
 ## icons
-#volumeicon &
+volumeicon &
 #nm-applet & #To active Wifi
 udiskie &
 
