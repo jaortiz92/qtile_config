@@ -292,7 +292,7 @@ def init_widgets_list():
             background = COLORS[7][1],
             padding = 3,
             icon_size = 20,
-            decorations = decoration_theme(5)
+            #decorations = decoration_theme(5)
         ),
         #widget.Volume(
                 #channel='IEC958',
@@ -312,9 +312,9 @@ def init_widgets_list():
                  ),
         widget_spacer(),
         widget.Clock(
-                 foreground = COLORS[8],
+                 foreground = COLORS[4],
                  format = "%a, %b %d %Y - %H:%M",
-                 decorations=decoration_theme(8),
+                 decorations=decoration_theme(4),
                  ),
         #widget_spacer(),
         #widget_spacer(),
