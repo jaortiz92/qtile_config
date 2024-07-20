@@ -36,13 +36,14 @@ import subprocess
 from qtile_extras import widget
 from qtile_extras.widget.decorations import BorderDecoration
 import colors
+import re
 
 mod = "mod4"
 alt = "mod1"
 terminal = "tilix"
 
-FONT = "Ubuntu Mono"
-FONT_BOLD = "Ubuntu Bold"
+FONT = "HackNerdFontMono-Regular"
+FONT_BOLD = "HackNerdFontMono-Bold"
 COLORS = colors.MonokaiPro
 
 
@@ -109,8 +110,8 @@ keys = [
 # groups = [Group(i) for i in "123456789"]
 __groups = {
     1: Group("MAIN"),
-    2: Group("WWW", matches=[Match(wm_class=["firefox"])]),
-    3: Group("DEV", matches=[Match(wm_class=["code", "chromium"])]),
+    2: Group("WWW"),#, matches=[Match(wm_class=["firefox"])]),
+    3: Group("DEV"),#, matches=[Match(wm_class=["code", "chromium"])]),
     4: Group("OTH"),
 }
 
@@ -264,7 +265,7 @@ def init_widgets_list():
         #         ),
         widget_spacer(),
         widget.CPU(
-                 format = '▓  Cpu: {load_percent}%',
+                 format = ' Cpu: {load_percent}%',
                  foreground = COLORS[4],
                  decorations=decoration_theme(4),
                  ),
@@ -273,7 +274,7 @@ def init_widgets_list():
                  foreground = COLORS[8],
                  mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e htop')},
                  format = '{MemUsed: ,.0f}{mm}',
-                 fmt = '🖥  Mem: {} used',
+                 fmt = '  Mem: {} used',
                  decorations=decoration_theme(8),
                  ),
         widget_spacer(),
@@ -284,10 +285,19 @@ def init_widgets_list():
                  partition = '/',
                  #format = '[{p}] {uf}{m} ({r:.0f}%)',
                  format = '{uf}{m} free',
-                 fmt = 'Disk: {}',
+                 fmt = '  Disk: {}',
                  visible_on_warn = False,
                  decorations = decoration_theme(5),
                  ),
+        widget_spacer(),
+        widget.Battery(
+            foreground = COLORS[6],
+            fmt = '⚡ Btry: {}',
+            #format='{char} {percent:2.0%} {hour:d}:{min:02d} {watt:.2f} W',
+            format='{char}{percent:2.0%} {hour:d}:{min:02d}',
+            low_percentage=0.2,
+            decorations = decoration_theme(6),
+        ),
         widget_spacer(),
         widget_basic.Systray(
             background = COLORS[7][1],
