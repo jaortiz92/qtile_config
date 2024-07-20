@@ -88,6 +88,7 @@ keys = [
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key([alt], "F4", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "g", lazy.window.toggle_floating(), desc="Toggle floating",),
 
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
@@ -109,7 +110,7 @@ keys = [
 __groups = {
     1: Group("MAIN"),
     2: Group("WWW", matches=[Match(wm_class=["firefox"])]),
-    3: Group("DEV", matches=[Match(wm_class=["code", "wchromium"])]),
+    3: Group("DEV", matches=[Match(wm_class=["code", "chromium"])]),
     4: Group("OTH"),
 }
 
