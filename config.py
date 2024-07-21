@@ -124,18 +124,25 @@ def get_group_key(name):
 
 for i in groups:
     keys.extend([
-        # mod1 + letter of group = switch to group
         Key([mod], str(get_group_key(i.name)), lazy.group[i.name].toscreen(),
             desc="Switch to group {}".format(i.name)),
-
-        # mod1 + shift + letter of group = switch to & move focused window to group
         Key([mod, "shift"], str(get_group_key(i.name)), lazy.window.togroup(i.name, switch_group=True),
             desc="Switch to & move focused window to group {}".format(i.name)),
-        # Or, use below if you prefer not to switch to that group.
-        # # mod1 + shift + letter of group = move focused window to group
-        # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-        #     desc="move focused window to group {}".format(i.name)),
     ])
+
+@hook.subscribe.client_new
+def assign_app_group(client):
+    d = {
+        "WWW": ["firefox", "chromium"],  
+        "DEV": ["code"],
+    }
+
+    wm_class = client.window.get_wm_class()[0]
+
+    for group_name, apps in d.items():
+        if wm_class in apps:
+            client.togroup(group_name)
+            client.group.cmd_toscreen()
 
 
 layout_theme = {"border_width": 2,
@@ -150,7 +157,7 @@ layouts = [
         border_focus_stack=COLORS[0],
         border_width=2,
     ),
-    layout.Max(),
+    # layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
@@ -265,7 +272,7 @@ def init_widgets_list():
         #         ),
         widget_spacer(),
         widget.CPU(
-                 format = ' Cpu: {load_percent}%',
+                 format = '\uf4bc  Cpu: {load_percent}%',
                  foreground = COLORS[4],
                  decorations=decoration_theme(4),
                  ),
@@ -274,7 +281,7 @@ def init_widgets_list():
                  foreground = COLORS[8],
                  mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e htop')},
                  format = '{MemUsed: ,.0f}{mm}',
-                 fmt = '  Mem: {} used',
+                 fmt = '\ue0c6  Mem: {} used',
                  decorations=decoration_theme(8),
                  ),
         widget_spacer(),
@@ -285,22 +292,29 @@ def init_widgets_list():
                  partition = '/',
                  #format = '[{p}] {uf}{m} ({r:.0f}%)',
                  format = '{uf}{m} free',
-                 fmt = '  Disk: {}',
+                 fmt = '\uf0c7  Disk: {}',
                  visible_on_warn = False,
                  decorations = decoration_theme(5),
                  ),
         widget_spacer(),
         widget.Battery(
             foreground = COLORS[6],
-            fmt = '⚡ Btry: {}',
+            fmt = '\uf0e7 Btry: {}',
             #format='{char} {percent:2.0%} {hour:d}:{min:02d} {watt:.2f} W',
             format='{char}{percent:2.0%} {hour:d}:{min:02d}',
             low_percentage=0.2,
             decorations = decoration_theme(6),
         ),
         widget_spacer(),
+        widget.WiFiIcon(
+            foreground = COLORS[7],
+            decorations = decoration_theme(7),
+            padding = 4,
+            background = COLORS[7][1]
+        ),
+        widget_spacer(),
         widget_basic.Systray(
-            background = COLORS[7][1],
+            background = COLORS[3][1],
             padding = 3,
             icon_size = 20,
             #decorations = decoration_theme(5)
@@ -316,19 +330,17 @@ def init_widgets_list():
                 #),
         widget_spacer(),
         widget.KeyboardLayout(
-                 foreground = COLORS[3],
-                 fmt = '⌨ {}',
+                 foreground = COLORS[4],
+                 fmt = '\uf11c   {}',
                  configured_keyboards = ['latam'],
-                 decorations=decoration_theme(3),
+                 decorations=decoration_theme(4),
                  ),
         widget_spacer(),
         widget.Clock(
-                 foreground = COLORS[4],
+                 foreground = COLORS[5],
                  format = "%a, %b %d %Y - %H:%M",
-                 decorations=decoration_theme(4),
+                 decorations=decoration_theme(5),
                  ),
-        #widget_spacer(),
-        #widget_spacer(),
         ]
     return widgets_list
 
