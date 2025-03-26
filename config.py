@@ -42,7 +42,9 @@ alt = "mod1"
 terminal = "tilix"
 
 FONT = "Ubuntu Mono"
+#FONT = "MesloLGS NF Regular"
 FONT_BOLD = "Ubuntu Bold"
+#FONT_BOLD = "MesloLGS NF Bold"
 COLORS = colors.MonokaiPro
 
 
@@ -264,7 +266,7 @@ def init_widgets_list():
         #         ),
         widget_spacer(),
         widget.CPU(
-                 format = '▓  Cpu: {load_percent}%',
+                 format = '\uf2db  Cpu: {load_percent}%',
                  foreground = COLORS[4],
                  decorations=decoration_theme(4),
                  ),
@@ -273,7 +275,7 @@ def init_widgets_list():
                  foreground = COLORS[8],
                  mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e htop')},
                  format = '{MemUsed: ,.0f}{mm}',
-                 fmt = '🖥  Mem: {} used',
+                 fmt = '\ue0c5  Mem: {} used',
                  decorations=decoration_theme(8),
                  ),
         widget_spacer(),
@@ -284,7 +286,7 @@ def init_widgets_list():
                  partition = '/',
                  #format = '[{p}] {uf}{m} ({r:.0f}%)',
                  format = '{uf}{m} free',
-                 fmt = 'Disk: {}',
+                 fmt = '\uf0c7 Disk: {}',
                  visible_on_warn = False,
                  decorations = decoration_theme(5),
                  ),
