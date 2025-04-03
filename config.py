@@ -111,7 +111,7 @@ keys = [
 # groups = [Group(i) for i in "123456789"]
 __groups = {
     1: Group("MAIN"),
-    2: Group("WWW", matches=[Match(wm_class=["firefox"])]),
+    2: Group("WWW", matches=[Match(wm_class=["firefox_firefox"])]),
     3: Group("DEV", matches=[Match(wm_class=["code", "chromium"])]),
     4: Group("OTH"),
 }
